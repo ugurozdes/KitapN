@@ -8,10 +8,45 @@ import PublisherShowcase from '../components/PublisherShowcase';
 import BookSection from '../components/BookSection';
 import { motion } from 'motion/react';
 import { allBooks } from '../data';
+import { supabase } from '../lib/supabase/client';
+import { useEffect } from 'react';
 
 export default function HomePage() {
+  console.log('🚀 HomePage Component Rendered');
+
   const editorPicks = allBooks.slice(0, 4);
   const newReleases = allBooks.slice(4, 8);
+
+  useEffect(() => {
+    console.log('🎬 useEffect Triggered: Starting Supabase Test');
+    
+    const testSupabase = async () => {
+      console.log('🔍 Executing Supabase Query: categories...');
+      try {
+        const { data, error } = await supabase.from('categories').select('*').limit(10);
+        
+        console.log('📡 Supabase Query Finished');
+        
+        if (error) {
+          console.error('❌ Supabase Error:', error.message);
+          console.error('Full Error Object:', error);
+        } else {
+          console.log('✅ Supabase Success!');
+          console.log('Data count:', data?.length || 0);
+          console.log('Data Content:', data);
+          
+          if (!data || data.length === 0) {
+            console.warn('⚠️ categories tablosu boş dönüyor. SQL seed verilerini kontrol edin.');
+          }
+        }
+      } catch (err) {
+        console.error('💥 Critical Error:', err);
+      }
+      console.log('🏁 Supabase Test Completed');
+    };
+
+    testSupabase();
+  }, []);
 
   return (
     <motion.div
